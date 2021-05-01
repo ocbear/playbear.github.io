@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>tips for kindle on playbear玩儿熊的自留地</title>
+    <link>https://playbear.world/tags/tips-for-kindle/</link>
+    <description>Recent content in tips for kindle on playbear玩儿熊的自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 03 Oct 2019 10:10:10 +0800</lastBuildDate>
+    
+	<atom:link href="https://playbear.world/tags/tips-for-kindle/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>【第3期】 你的Kindle设备终于不用吃灰压泡面了</title>
+      <link>https://playbear.world/2019/10/03/%E7%AC%AC3%E6%9C%9F-%E4%BD%A0%E7%9A%84kindle%E8%AE%BE%E5%A4%87%E7%BB%88%E4%BA%8E%E4%B8%8D%E7%94%A8%E5%90%83%E7%81%B0%E5%8E%8B%E6%B3%A1%E9%9D%A2%E4%BA%86/</link>
+      <pubDate>Thu, 03 Oct 2019 10:10:10 +0800</pubDate>
+      
+      <guid>https://playbear.world/2019/10/03/%E7%AC%AC3%E6%9C%9F-%E4%BD%A0%E7%9A%84kindle%E8%AE%BE%E5%A4%87%E7%BB%88%E4%BA%8E%E4%B8%8D%E7%94%A8%E5%90%83%E7%81%B0%E5%8E%8B%E6%B3%A1%E9%9D%A2%E4%BA%86/</guid>
+      <description>说起kindle，这款由亚马逊推出的超级火爆的阅读神器，300ppi显示的电子墨水屏，内置阅读灯，堪比纸质书的阅读体验，续航可以达到几个星期甚至一个月，相信是很多学生以及阅读爱好者必须要收割的一款设备，但不知道大家会不会像我一样，由于工作忙的原因，买回来基本上没怎么看，最后变成了闲置或者用来压泡面！
+但有一句话是怎么说来着：
+你买回来一本书放在桌面上，过了不到几个月，你就会听见他骂你的声音。
+所以还是得捡起来，计划好时间阅读书籍，增进自己一些见识，但有时候我在想啊，能不能把我从网上获取的文章打包成电子书的方式推送到KINDLE呢？于是劈哩叭啦得研究了一番，还真有！！
+这个东西叫KindleEar.
+KindleEar 是免费托管在 Google Cloud 的 Google App Engine（GAE）应用中的，通过这个神器，我们可以订阅我们想要的RSS资讯，生成电子书，我们还可以自定义电子书的封面和排版，然后定时推送到我们的Kindle设备上。
+上两期文章呢，我分享了如何通过RSS这个『上古神器』去订阅我想要的资讯。,还有RSSHUB这个开源程序可以为很多网站都可以开通订阅RSS，如果你还没看过上两期的文章，记得订阅我的公众号@playbear玩儿熊，翻一翻我之前的文章，那么如何使用kindle阅读我们之前订阅的资讯呢，废话不多说，去片！   国内小伙伴可以在以下两个平台查看：
+哔哩哔哩：https://www.bilibili.com/video/av69558114/
+西瓜视频：https://www.ixigua.com/i6742325049136513544/
+当然了，这个工具目前功能不多，不太完善，期待下一期，我会重新整理这部分的代码，提供给大家一个全新的推送服务。</description>
+    </item>
+    
+  </channel>
+</rss>

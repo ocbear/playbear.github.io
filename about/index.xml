@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>关于我 on playbear玩儿熊的自留地</title>
+    <link>https://playbear.world/about/</link>
+    <description>Recent content in 关于我 on playbear玩儿熊的自留地</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 04 Oct 2019 15:05:20 +0800</lastBuildDate>
+    
+	<atom:link href="https://playbear.world/about/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+  </channel>
+</rss>

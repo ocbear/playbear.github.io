@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <title>免流 &middot; playbear玩儿熊的自留地</title>
+    <meta name="generator" content="Hugo 0.58.3" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="author" content="playbear玩儿熊">
+    
+      <meta name="description" content="">
+    
+    
+    <link rel="canonical" href="https://example.org/2017/05/20/%E5%85%8D%E6%B5%81/"/>
+    <link rel="icon" href="https://example.org/favicon.ico">
+    <link rel="apple-touch-icon" href="https://example.org/apple-touch-icon.png"/>
+    <link rel="stylesheet" href="https://example.org/css/style.css">
+    <link rel="stylesheet" href="https://example.org/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://example.org/css/monokai.css">
+    <link rel="stylesheet" href="https://example.org/fancybox/jquery.fancybox.css">
+    
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+    <meta property="og:title" content="免流" />
+<meta property="og:description" content="[TOC]
+1. 介绍 这里介绍的代理服务器命名为S5Proxy, 它实现的代理协议是socks5协议. 这类代理服务器一般的作用是防火墙穿透, 定向流量等, 客户不同, 用法各异. 为了满足最普遍的需求, 支持更多现成的客户端库, 本代理服务器力求实现与标准的socks5协议所描述的接口，目前暂只支持TCP的代理, 另外综合考虑使用的简便性与安全性, 本服务器实现动态密码的机制, 以及白名单的功能, 后面章节再详细介绍验证的方面.
+2. tcp代理 socks5协议描述了有多种功能, 但最常用的应该是tcp代理. 这节主要讲tcp代理的步骤及客户端与代理之间的数据包格式.
+2.1. 步骤及数据包  客户端表明身份及能力.  该步骤用于客户端向代理表明自己的版本(这里由于本代理只支持socks5, 并不支持socks4, 所以版本号只能是5), 以及客户端支持的验证方法.
+数据包格式:
+ &#43;----&#43;----------&#43;----------&#43; |VER | NMETHODS | METHODS | &#43;----&#43;----------&#43;----------&#43; | 1 | 1 | 1 to 255 | &#43;----&#43;----------&#43;----------&#43;  数据包第一行是字段名字, 第二行是字段长度, 通常情况下能根据字段名推测出含义, 如果想了解更详细的字段意义及用法, 可参考
+ 英文rfc: https://tools.ietf.org/html/rfc1928 中文rfc: http://blog.csdn.net/mycoolx/article/details/7496564
+  代理响应客户端表明版本, 及选择一个验证方法.
+ &#43;----&#43;--------&#43; |VER | METHOD | &#43;----&#43;--------&#43; | 1 | 1 | &#43;----&#43;--------&#43;   这里采用的验证是自定义的明文验证, 所以METHOD填成X&rsquo;02&rsquo;." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://example.org/2017/05/20/%E5%85%8D%E6%B5%81/" />
+<meta property="article:published_time" content="2017-05-20T11:58:06+02:00" />
+<meta property="article:modified_time" content="2017-05-20T11:58:06+02:00" />
+
+    
+    <meta itemprop="name" content="免流">
+<meta itemprop="description" content="[TOC]
+1. 介绍 这里介绍的代理服务器命名为S5Proxy, 它实现的代理协议是socks5协议. 这类代理服务器一般的作用是防火墙穿透, 定向流量等, 客户不同, 用法各异. 为了满足最普遍的需求, 支持更多现成的客户端库, 本代理服务器力求实现与标准的socks5协议所描述的接口，目前暂只支持TCP的代理, 另外综合考虑使用的简便性与安全性, 本服务器实现动态密码的机制, 以及白名单的功能, 后面章节再详细介绍验证的方面.
+2. tcp代理 socks5协议描述了有多种功能, 但最常用的应该是tcp代理. 这节主要讲tcp代理的步骤及客户端与代理之间的数据包格式.
+2.1. 步骤及数据包  客户端表明身份及能力.  该步骤用于客户端向代理表明自己的版本(这里由于本代理只支持socks5, 并不支持socks4, 所以版本号只能是5), 以及客户端支持的验证方法.
+数据包格式:
+ &#43;----&#43;----------&#43;----------&#43; |VER | NMETHODS | METHODS | &#43;----&#43;----------&#43;----------&#43; | 1 | 1 | 1 to 255 | &#43;----&#43;----------&#43;----------&#43;  数据包第一行是字段名字, 第二行是字段长度, 通常情况下能根据字段名推测出含义, 如果想了解更详细的字段意义及用法, 可参考
+ 英文rfc: https://tools.ietf.org/html/rfc1928 中文rfc: http://blog.csdn.net/mycoolx/article/details/7496564
+  代理响应客户端表明版本, 及选择一个验证方法.
+ &#43;----&#43;--------&#43; |VER | METHOD | &#43;----&#43;--------&#43; | 1 | 1 | &#43;----&#43;--------&#43;   这里采用的验证是自定义的明文验证, 所以METHOD填成X&rsquo;02&rsquo;.">
+
+
+<meta itemprop="datePublished" content="2017-05-20T11:58:06&#43;02:00" />
+<meta itemprop="dateModified" content="2017-05-20T11:58:06&#43;02:00" />
+<meta itemprop="wordCount" content="288">
+
+
+
+<meta itemprop="keywords" content="" />
+
+    <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="免流"/>
+<meta name="twitter:description" content="[TOC]
+1. 介绍 这里介绍的代理服务器命名为S5Proxy, 它实现的代理协议是socks5协议. 这类代理服务器一般的作用是防火墙穿透, 定向流量等, 客户不同, 用法各异. 为了满足最普遍的需求, 支持更多现成的客户端库, 本代理服务器力求实现与标准的socks5协议所描述的接口，目前暂只支持TCP的代理, 另外综合考虑使用的简便性与安全性, 本服务器实现动态密码的机制, 以及白名单的功能, 后面章节再详细介绍验证的方面.
+2. tcp代理 socks5协议描述了有多种功能, 但最常用的应该是tcp代理. 这节主要讲tcp代理的步骤及客户端与代理之间的数据包格式.
+2.1. 步骤及数据包  客户端表明身份及能力.  该步骤用于客户端向代理表明自己的版本(这里由于本代理只支持socks5, 并不支持socks4, 所以版本号只能是5), 以及客户端支持的验证方法.
+数据包格式:
+ &#43;----&#43;----------&#43;----------&#43; |VER | NMETHODS | METHODS | &#43;----&#43;----------&#43;----------&#43; | 1 | 1 | 1 to 255 | &#43;----&#43;----------&#43;----------&#43;  数据包第一行是字段名字, 第二行是字段长度, 通常情况下能根据字段名推测出含义, 如果想了解更详细的字段意义及用法, 可参考
+ 英文rfc: https://tools.ietf.org/html/rfc1928 中文rfc: http://blog.csdn.net/mycoolx/article/details/7496564
+  代理响应客户端表明版本, 及选择一个验证方法.
+ &#43;----&#43;--------&#43; |VER | METHOD | &#43;----&#43;--------&#43; | 1 | 1 | &#43;----&#43;--------&#43;   这里采用的验证是自定义的明文验证, 所以METHOD填成X&rsquo;02&rsquo;."/>
+<meta name="twitter:site" content="@playbear666"/>
+
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+<div class="container">
+
+
+<div id="container">
+	<header id="header">
+  <div id="header-main" class="header-inner">
+    <div class="outer">
+      <a href="https://example.org/" id="logo">
+          
+          <i class="logo" style="background-image: url('https://example.org/css/images/logo.png')"></i>
+          
+          <span class="site-title">playbear玩儿熊的自留地</span>
+      </a>
+      <nav id="main-nav">
+          
+          
+          <a class="main-nav-link" href="https://example.org/post">首页</a>
+          
+          
+          
+          
+          
+          
+
+          
+          <a class="main-nav-link" href="/about/">About</a>
+          
+          <a class="main-nav-link" href="/2015/10/02/how-to-add-pages-to-the-menu/">How to add pages to the menu</a>
+          
+
+          
+          
+          
+          
+          <a class="main-nav-link" href="https://example.org/tags/">标签</a>
+          
+          
+          
+          <a class="main-nav-link" href="https://example.org/categories/">分类</a>
+          
+          
+      </nav>
+        <nav id="sub-nav">
+          <div class="profile" id="profile-nav">
+            <a id="profile-anchor" href="javascript:;"><img class="avatar" src="https://example.org/css/images/avatar.png"><i class="fa fa-caret-down"></i></a>
+          </div>
+        </nav>
+        <div id="search-form-wrap">
+          <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form">
+              <input type="search" name="q" class="search-form-input" placeholder="Search">
+              <button type="submit" class="search-form-submit">
+              </button>
+              <input type="hidden" name="sitesearch" value="https://example.org/" />
+         </form>
+        </div>
+    </div>
+  </div>
+  <div id="main-nav-mobile" class="header-sub header-inner">
+    <table class="menu outer">
+      <tbody>
+          <tr>
+          
+          
+          <td><a class="main-nav-link" href="https://example.org/post">首页</a></td>
+          
+          
+          
+          
+          
+          
+
+          
+          <td><a class="main-nav-link" href="/about/">About</a></td>
+          
+          <td><a class="main-nav-link" href="/2015/10/02/how-to-add-pages-to-the-menu/">How to add pages to the menu</a></td>
+          
+
+          
+          
+          
+          
+          <td><a class="main-nav-link" href="https://example.org/tags/">标签</a></td>
+          
+          
+          
+          <td><a class="main-nav-link" href="https://example.org/categories/">分类</a></td>
+          
+          
+          <td>
+          <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form">
+          <input type="search" name="q" class="search-form-input" placeholder="Search">
+          <input type="hidden" name="sitesearch" value="https://example.org/" />
+          </form>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</header>
+
+   	
+   	<div class="outer">
+   	
+    	<aside id="profile">
+  <div class="inner profile-inner">
+    <div class="base-info profile-block">
+      
+      <img id="avatar" src="css/images/avatar.png"/>
+      
+      <h2 id="name">playbear玩儿熊</h2>
+      <h3 id="title">Programmer/Blogger</h3>
+      <span id="location"><i class="fa fa-map-marker"></i>Earth</span>
+      
+          <a id="follow" href="https://www.youtube.com/channel/UC18rGggQjOEGOyR9tMv8rKg">
+              订阅
+          </a>
+      
+    </div>
+    <div class="article-info profile-block">
+      <div class="article-info-block">
+        6
+        <span>原创文章</span>
+      </div>
+      <div class="article-info-block">
+        
+          5
+        
+        <span>
+            标签
+        </span>
+      </div>
+    </div>
+    <div class="profile-block social-links">
+      <table>
+        <tr>
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<td><a href="//instagram.com/playbear666" target="_blank" title="Instagram"><i class="fa fa-instagram"></i></a></td>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<td><a href="//facebook.com/playbear666" target="_blank" title="Facebook"><i class="fa fa-facebook"></i></a></td>
+
+
+
+<td><a href="//twitter.com/playbear666" target="_blank" title="Twitter"><i class="fa fa-twitter"></i></a></td>
+
+
+          <td><a href="https://example.org/index.xml" target="_blank" title="RSS"><i class="fa fa-rss"></i></a></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</aside>
+
+    
+
+    <section id="main">
+    
+    <article id="page-undefined" class="article article-type-page" itemscope="" itemprop="blogPost">
+    <div class="article-inner">
+        
+
+        <header class="article-header">
+    <a href="https://example.org/2017/05/20/%E5%85%8D%E6%B5%81/">
+    <h1 class="article-title" itemprop="name">
+        免流
+    </h1>
+    </a>
+    <div class="article-meta">
+
+        
+        <div class="article-date">
+            <i class="fa fa-calendar"></i>
+            <time datetime="2017-05-20 11:58:06 &#43;0200 &#43;0200" itemprop="datePublished">2017-05-20</time>
+            &middot;
+            288
+            关键词
+            &middot;
+            2
+            分钟之前阅读过
+        </div>
+        
+        
+            
+            
+        
+
+        
+            
+            
+        
+    </div>
+</header>
+
+        <div class="article-entry" itemprop="articleBody">
+            
+
+<p>[TOC]</p>
+
+<h1 id="1-介绍">1. 介绍</h1>
+
+<p>这里介绍的代理服务器命名为S5Proxy, 它实现的代理协议是socks5协议. 这类代理服务器一般的作用是防火墙穿透, 定向流量等, 客户不同, 用法各异. 为了满足最普遍的需求, 支持更多现成的客户端库, 本代理服务器力求实现与标准的socks5协议所描述的接口，目前暂只支持TCP的代理, 另外综合考虑使用的简便性与安全性, 本服务器实现动态密码的机制, 以及白名单的功能, 后面章节再详细介绍验证的方面.</p>
+
+<h1 id="2-tcp代理">2. tcp代理</h1>
+
+<p>socks5协议描述了有多种功能, 但最常用的应该是tcp代理.  这节主要讲tcp代理的步骤及客户端与代理之间的数据包格式.</p>
+
+<h2 id="2-1-步骤及数据包">2.1. 步骤及数据包</h2>
+
+<ol>
+<li>客户端表明身份及能力.</li>
+</ol>
+
+<p>该步骤用于客户端向代理表明自己的版本(这里由于本代理只支持socks5, 并不支持socks4, 所以版本号只能是5), 以及客户端支持的验证方法.</p>
+
+<p>数据包格式:</p>
+
+<pre><code>                      +----+----------+----------+
+                      |VER | NMETHODS | METHODS  |
+                      +----+----------+----------+
+                      | 1  |    1     | 1 to 255 |
+                      +----+----------+----------+
+</code></pre>
+
+<p>数据包第一行是字段名字, 第二行是字段长度, 通常情况下能根据字段名推测出含义, 如果想了解更详细的字段意义及用法, 可参考</p>
+
+<blockquote>
+<p>英文rfc: <a href="https://tools.ietf.org/html/rfc1928">https://tools.ietf.org/html/rfc1928</a>
+中文rfc: <a href="http://blog.csdn.net/mycoolx/article/details/7496564">http://blog.csdn.net/mycoolx/article/details/7496564</a></p>
+</blockquote>
+
+<ol>
+<li><p>代理响应客户端表明版本, 及选择一个验证方法.</p>
+
+<pre><code>                        +----+--------+
+                        |VER | METHOD |
+                        +----+--------+
+                        | 1  |   1    |
+                        +----+--------+
+</code></pre></li>
+</ol>
+
+<p>这里采用的验证是自定义的明文验证, 所以METHOD填成X&rsquo;02&rsquo;.</p>
+
+<pre><code>      The values currently defined for METHOD are:
+
+             o  X'00' NO AUTHENTICATION REQUIRED
+             o  X'01' GSSAPI
+             o  X'02' USERNAME/PASSWORD
+             o  X'03' to X'7F' IANA ASSIGNED
+             o  X'80' to X'FE' RESERVED FOR PRIVATE METHODS
+             o  X'FF' NO ACCEPTABLE METHODS
+</code></pre>
+
+<ol>
+<li><p>客户端发送验证信息.</p>
+
+<pre><code>          +----+------+----------+------+----------+
+          |VER | ULEN |  UNAME   | PLEN |  PASSWD  |
+          +----+------+----------+------+----------+
+          | 1  |  1   | 1 to 255 |  1   | 1 to 255 |
+          +----+------+----------+------+----------+
+</code></pre></li>
+</ol>
+
+<p>用户名与密码, 都是变长的字段. 这个验证是一个补充的rfc说明的, 见</p>
+
+<p>明文验证有其简便性, 但是安全性方面则有所欠缺, 所以本S5Proxy代理将会保留该格式的基础上, 采取动态密码的方案. 下一节给出说明.</p>
+
+<ol>
+<li><p>服务端应答验证结果.</p>
+
+<pre><code>                       +----+--------+
+                       |VER | STATUS |
+                       +----+--------+
+                       | 1  |   1    |
+                       +----+--------+
+</code></pre></li>
+
+<li><p>客户端发送代理请求.</p>
+
+<pre><code>       +----+-----+-------+------+----------+----------+
+       |VER | CMD |  RSV  | ATYP | DST.ADDR | DST.PORT |
+       +----+-----+-------+------+----------+----------+
+       | 1  |  1  | X'00' |  1   | Variable |    2     |
+       +----+-----+-------+------+----------+----------+
+</code></pre></li>
+</ol>
+
+<p>这里cmd含义如下, 对于tcp代理应该填成X&rsquo;01&rsquo;</p>
+
+<pre><code>             o  CMD
+                o  CONNECT X'01'
+                o  BIND X'02'
+                o  UDP ASSOCIATE X'03'
+</code></pre>
+
+<ol>
+<li>代理端连接源服务器.</li>
+</ol>
+
+<p>代理根据步骤5给出的地址及端口, 尝试连接.</p>
+
+<ol>
+<li><p>代理端发送步骤6的结果到客户端.</p>
+
+<pre><code>       +----+-----+-------+------+----------+----------+
+       |VER | REP |  RSV  | ATYP | BND.ADDR | BND.PORT |
+       +----+-----+-------+------+----------+----------+
+       | 1  |  1  | X'00' |  1   | Variable |    2     |
+       +----+-----+-------+------+----------+----------+
+</code></pre></li>
+</ol>
+
+<p>这里BND.ADDR, 及BND.PORT是代理服务器向客户端提供的地址及端口, 所有该地址端口的数据将会得到转发, 对于tcp连接来说, 无需另外开端口, 在协议交互的该同一连接上, 继续进行数据流的交互.</p>
+
+<ol>
+<li>如果步骤6成功, 客户端开始发送接收数据.</li>
+</ol>
+
+<p>代理端则开始转发数据.</p>
+
+<h2 id="2-2-tcp的验证">2.2. tcp的验证</h2>
+
+<p>本代理所采用验证为类似明文的验证的数据包结构, 即Method为X&rsquo;02&rsquo; USERNAME/PASSWORD, rfc要求客户端发给代理服务器的密码是明文, 但本代理的变体实现要求如下：</p>
+
+<ul>
+<li><p>username: [appkey]&amp;[userPhoneNum]&amp;[timestamp]</p>
+
+<pre><code class="language-txt">其中：
+appkey：表示合作方申请免流服务时所分配的APPKEY
+userPhoneNum：表示当前使用免流用户的手机号码
+timestamp：当前的时间戳，seconds since 1970-01-01 00:00:00 UTC, 当前的时间值与免流服务器端设置的可允许时间间隔范围之外的会被拒绝，合作方需保证时间值的正确性。
+</code></pre></li>
+
+<li><p>password: md5([username]&amp;[appkeySecret])</p>
+
+<pre><code class="language-txt">其中：
+username：上述用户名
+appkeySecret：表示合作方申请免流服务时所分配的APPKEY对应的密钥
+md5: 使用md5算法计算哈希值
+</code></pre></li>
+</ul>
+
+<p>例子： 对于手机用户13288888888，对应合作方的appkey为abcde，其密码为test,当前时间戳为1568083104由验证时要发送到代理服务器的用户名字段为：abcde&amp;13288888888&amp;1568083104, 密码字段为：D5D7F119B58CA9FCF51E2B7380D9924C</p>
+
+<h1 id="3-白名单">3. 白名单</h1>
+
+<p>白名单功能不在socks5的协议范围内, 但是该功能没有额外的数据包交互, 没有额外的接口需要说明, 客户端如果访问不在白名单上的源地址, 则会被拒绝.</p>
+
+<p>客户端需要访问哪些源地址, 可提前以ip或者域名的方式提出申请, 在S5Proxy代理端配置好即可生效. 对于多个地址的情况, S5Proxy白名单支持用&rsquo;*&lsquo;来进行模式匹配, 比如, *.baidu.com, 192.168.0.*等.</p>
+
+        </div>
+        <footer class="article-footer">
+    <a data-url="https://example.org/2017/05/20/%E5%85%8D%E6%B5%81/" data-id="f9cf7702151e8a3e37269b8a2c462fc3" class="article-share-link">
+        <i class="fa fa-share"></i>
+        分享
+    </a>
+    
+    <a href="https://example.org/2017/05/20/%E5%85%8D%E6%B5%81/#disqus_thread" class="article-comment-link">
+        评论
+    </a>
+    
+
+    <script>
+    (function ($) {
+        
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+    </script>
+</footer>
+
+    </div>
+
+    
+<nav id="article-nav">
+    
+    <a href="https://example.org/2017/05/20/%E6%B5%8B%E8%AF%95/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">
+          历史阅读
+      </strong>
+      <div class="article-nav-title">测试</div>
+    </a>
+    
+
+    
+    <a href="https://example.org/2017/05/20/formulas-with-mathjax/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">
+          最新阅读
+      </strong>
+      <div class="article-nav-title">Formulas with MathJax</div>
+    </a>
+    
+</nav>
+
+
+</article>
+
+
+<section id="comments">
+    <div id="disqus_thread">
+        <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "playbear" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+</section>
+
+
+    </section>
+
+   	
+    	<aside id="sidebar">
+    
+<div class="widget-wrap">
+    <h3 class="widget-title">
+        最近发布
+    </h3>
+    <div class="widget">
+        <ul id="recent-post">
+            
+            <li>
+                <div class="item-thumbnail">
+                    <a href="https://example.org/2017/05/20/markdown-cheat-sheet/" class="thumbnail">
+                    
+                        <span class="thumbnail-image thumbnail-none"></span>
+                    
+                    </a>
+                </div>
+                <div class="item-inner">
+                    
+                    
+                    
+                    <p class="item-title"><a href="https://example.org/2017/05/20/markdown-cheat-sheet/" class="title">Markdown Cheat Sheet</a></p>
+                    <p class="item-date">
+                        <time datetime="2017-05-20 12:10:51 &#43;0200 &#43;0200" itemprop="datePublished">2017-05-20</time>
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <div class="item-thumbnail">
+                    <a href="https://example.org/2017/05/20/using-the-gallery-shortcode/" class="thumbnail">
+                    
+                        <span class="thumbnail-image thumbnail-none"></span>
+                    
+                    </a>
+                </div>
+                <div class="item-inner">
+                    
+                    
+                    
+                    <p class="item-title"><a href="https://example.org/2017/05/20/using-the-gallery-shortcode/" class="title">Using the gallery shortcode</a></p>
+                    <p class="item-date">
+                        <time datetime="2017-05-20 12:00:23 &#43;0200 &#43;0200" itemprop="datePublished">2017-05-20</time>
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <div class="item-thumbnail">
+                    <a href="https://example.org/2017/05/20/formulas-with-mathjax/" class="thumbnail">
+                    
+                        <span class="thumbnail-image thumbnail-none"></span>
+                    
+                    </a>
+                </div>
+                <div class="item-inner">
+                    
+                    
+                    
+                    <p class="item-title"><a href="https://example.org/2017/05/20/formulas-with-mathjax/" class="title">Formulas with MathJax</a></p>
+                    <p class="item-date">
+                        <time datetime="2017-05-20 11:58:06 &#43;0200 &#43;0200" itemprop="datePublished">2017-05-20</time>
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <div class="item-thumbnail">
+                    <a href="https://example.org/2017/05/20/%E5%85%8D%E6%B5%81/" class="thumbnail">
+                    
+                        <span class="thumbnail-image thumbnail-none"></span>
+                    
+                    </a>
+                </div>
+                <div class="item-inner">
+                    
+                    
+                    
+                    <p class="item-title"><a href="https://example.org/2017/05/20/%E5%85%8D%E6%B5%81/" class="title">免流</a></p>
+                    <p class="item-date">
+                        <time datetime="2017-05-20 11:58:06 &#43;0200 &#43;0200" itemprop="datePublished">2017-05-20</time>
+                    </p>
+                </div>
+            </li>
+            
+            <li>
+                <div class="item-thumbnail">
+                    <a href="https://example.org/2017/05/20/%E6%B5%8B%E8%AF%95/" class="thumbnail">
+                    
+                        <span class="thumbnail-image thumbnail-none"></span>
+                    
+                    </a>
+                </div>
+                <div class="item-inner">
+                    
+                    
+                    
+                    <p class="item-title"><a href="https://example.org/2017/05/20/%E6%B5%8B%E8%AF%95/" class="title">测试</a></p>
+                    <p class="item-date">
+                        <time datetime="2017-05-20 11:58:06 &#43;0200 &#43;0200" itemprop="datePublished">2017-05-20</time>
+                    </p>
+                </div>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+    
+
+
+<div class="widget-wrap">
+    <h3 class="widget-title">分类列表</h3>
+    <div class="widget">
+        <ul class="category-list">
+            
+            <li class="category-list-item">
+                
+                <a class="category-list-link" href="https://example.org/categories/programming">
+                    programming
+                </a>
+                <span class="category-list-count">1</span>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+    
+
+
+<div class="widget-wrap">
+    <h3 class="widget-title">
+        标签
+    </h3>
+    <div class="widget">
+        <ul class="category-list">
+            
+            <li class="category-list-item">
+                
+                <a class="category-list-link" href="https://example.org/tags/golang">
+                    golang
+                </a>
+                <span class="category-list-count">1</span>
+            </li>
+            
+            <li class="category-list-item">
+                
+                <a class="category-list-link" href="https://example.org/tags/hugo">
+                    hugo
+                </a>
+                <span class="category-list-count">1</span>
+            </li>
+            
+            <li class="category-list-item">
+                
+                <a class="category-list-link" href="https://example.org/tags/markdown">
+                    markdown
+                </a>
+                <span class="category-list-count">1</span>
+            </li>
+            
+            <li class="category-list-item">
+                
+                <a class="category-list-link" href="https://example.org/tags/programming">
+                    programming
+                </a>
+                <span class="category-list-count">1</span>
+            </li>
+            
+            <li class="category-list-item">
+                
+                <a class="category-list-link" href="https://example.org/tags/theme">
+                    theme
+                </a>
+                <span class="category-list-count">1</span>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+
+
+
+    
+
+
+<div class="widget-wrap">
+    <h3 class="widget-title">
+        云标签
+    </h3>
+    <div class="widget tagcloud">
+        
+        
+        <a href="https://example.org/tags/golang" style="font-size: 12px;">golang</a>
+        
+        
+        <a href="https://example.org/tags/hugo" style="font-size: 12px;">hugo</a>
+        
+        
+        <a href="https://example.org/tags/markdown" style="font-size: 12px;">markdown</a>
+        
+        
+        <a href="https://example.org/tags/programming" style="font-size: 12px;">programming</a>
+        
+        
+        <a href="https://example.org/tags/theme" style="font-size: 12px;">theme</a>
+        
+    </div>
+</div>
+
+
+
+
+
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+    
+	</div>
+</div>
+
+<footer id="footer">
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019
+      Powered by <a href="//gohugo.io">Hugo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>.
+    </div>
+  </div>
+</footer>
+
+
+<script src="https://example.org/fancybox/jquery.fancybox.pack.js"></script>
+<script src="https://example.org/js/script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+</body>
+</html>
